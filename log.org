@@ -1,1 +1,5 @@
-* <2018-04-25 Wed> Started
+* <2018-04-25 Wed>
+- Started
+* <2018-04-27 Fri>
+- Up to exercise 1.8
+- Page: 26
