@@ -172,6 +172,7 @@
 
 ;; Exercise 1.8
 
+
 (define (cbrt-iter guess last x)
   (if (good-enough-better? guess last)
       guess
@@ -188,3 +189,66 @@
   (cbrt-iter 1.0 x x))
 
 (cbrt (* 3 3 3)) ;=> 3.0000000000000977
+
+
+;; Exercise 1.9
+
+;; (define (+ a b)
+;;   (if (= a 0)
+;;     b
+;;     (inc (+ (dec a) b))))
+;;
+;; (+ 4 5)
+;;
+;; (inc (+ (dec 4) 5))
+;; (inc (inc (+ (dec 3) 5)))
+;; (inc (inc (inc (+ (dec 2) 5))))
+;; (inc (inc (inc (inc (+ (dec 1) 5)))))
+;; (inc (inc (inc (inc 5))))
+
+;; (define (+ a b)
+;;   (if (= a 0)
+;;       b
+;;       (+ (dec a) (inc b))))
+;;
+;; (+ 4 5)
+;;
+;; (+ 3 6)
+;; (+ 2 7)
+;; (+ 1 8)
+;; (+ 0 9)
+;; 9
+
+
+;; Exercise 1.10
+
+(define (ackermann x y)
+  (cond [(= y 0) 0]
+        [(= x 0) (* 2 y)]
+        [(= y 1) 2]
+        [else (ackermann (- x 1)
+                         (ackermann x (- y 1)))]))
+
+(ackermann 1 10) ;=> 1024
+
+(ackermann 2 4) ;=> 65536
+
+(ackermann 3 3) ;=> 65536
+
+
+;; (define (f n) (ackermann 0 n))
+;; (f n) = (* 2 n)
+
+;; (define (g n) (ackermann 1 n))
+;; (g n) = (ackermann 0 (ackermann 1 (- n 1)) ;; (f (ackermann 1 (- n 1)))
+;; (g n) = (* 2 (ackermann 1 (- n 1)))
+;; (g n) = (* 2 (ackermann 0 (ackermann 1 (- n 2))))
+;; (g n) = (* 2 (* 2 (ackermann 1 (- n 3))))
+;; (g n) = 2 ^ n given n > 0
+
+;; (define (h n) (ackermann 2 n))
+;; (h n) = (ackermann 1 (ackermann 2 (- n 1)))
+;; (h n) = (g (ackermann 2 (- n 1)))
+;; (h n) = (g (g (ackermann 2 (- n 2))))
+;; (h n) = (g (g (g (ackermann 2 (- n 3)))))
+;; (h n) = 2 ^ (2 ^ (2 ^ (...)))
