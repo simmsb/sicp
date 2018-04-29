@@ -6,3 +6,6 @@
 * <2018-04-28 Sat>
 - Up to exercise 1.10
 - Page: 37
+* <2018-04-29 Sun>
+- Up to exercise 1.13
+- Page: 42

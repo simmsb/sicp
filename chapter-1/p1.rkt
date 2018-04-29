@@ -236,19 +236,167 @@
 (ackermann 3 3) ;=> 65536
 
 
-;; (define (f n) (ackermann 0 n))
+(define (f n) (ackermann 0 n))
 ;; (f n) = (* 2 n)
 
-;; (define (g n) (ackermann 1 n))
+(f 1) ;=> 2
+(f 2) ;=> 4
+(f 3) ;=> 6
+
+(define (g n) (ackermann 1 n))
 ;; (g n) = (ackermann 0 (ackermann 1 (- n 1)) ;; (f (ackermann 1 (- n 1)))
 ;; (g n) = (* 2 (ackermann 1 (- n 1)))
 ;; (g n) = (* 2 (ackermann 0 (ackermann 1 (- n 2))))
 ;; (g n) = (* 2 (* 2 (ackermann 1 (- n 3))))
 ;; (g n) = 2 ^ n given n > 0
 
-;; (define (h n) (ackermann 2 n))
+(g 1) ;=> 2
+(g 2) ;=> 4
+(g 3) ;=> 8
+
+(define (h n) (ackermann 2 n)) ;=> #<void>
 ;; (h n) = (ackermann 1 (ackermann 2 (- n 1)))
 ;; (h n) = (g (ackermann 2 (- n 1)))
 ;; (h n) = (g (g (ackermann 2 (- n 2))))
 ;; (h n) = (g (g (g (ackermann 2 (- n 3)))))
 ;; (h n) = 2 ^ (2 ^ (2 ^ (...)))
+
+(h 1) ;=> 2
+(h 2) ;=> 4
+(h 3) ;=> 16
+
+
+;; Exercise 1.11
+(module* exc-1-11 #f
+  (define (f-rec n)
+    (printf "n = ~a\n" n)
+    (cond [(< n 3) n]
+          [else (+ (* (f-rec (- n 1)) 1)
+                   (* (f-rec (- n 2)) 2)
+                   (* (f-rec (- n 3)) 3))]))
+
+  (f-rec 1) ;=> 1
+  (f-rec 3) ;=> 4
+  (f-rec 4) ;=> 11
+
+  (define (f-iter n)
+    (cond [(< n 3) n]
+          [else (let go ([a 2]
+                         [b 1]
+                         [c 0]
+                         [cnt 0])
+                  (cond [(= cnt (- n 2)) a]
+                        [else (go
+                               (+ a
+                                  (* 2 b)
+                                  (* 3 c))
+                               a
+                               b
+                               (add1 cnt))]))]))
+
+  (f-iter 1) ;=> 1
+  (f-iter 2) ;=> 2
+  (f-iter 3) ;=> 4
+  (f-iter 4) ;=> 11
+)
+
+
+;; 1
+;; 1 1
+;; 1 2 1
+;; 1 3 3 1
+;; 1 4 6 4 1
+
+;; Exercise 1.12
+(module* exc-1-12 #f
+  (define (pascal row elem)
+    (cond [(<= elem 0)   1]
+          [(>= elem row) 1]
+          [else (+ (pascal (sub1 row) (sub1 elem))
+                   (pascal (sub1 row) elem))]))
+
+  (pascal 0 0)
+  (pascal 2 1)
+  )
+
+
+;; Exercise 1.13
+;; p = 𝟇 = (1 + sqrt(5)) / 2
+;; s = 𝟁 = (1 - sqrt(5)) / 2
+;; given fib(n) = (p^n - s^n) / sqrt(5)
+;;
+;; fib(0) = (1 - 1) / sqrt(5)
+;; fib(0) = 0
+;;
+;; fib(1) = ( (1 + sqrt(5) / 2) - (1 - sqrt(5) / 2) ) / sqrt(5)
+;; fib(1) = ( (sqrt(5) + sqrt(5)) / 2) / sqrt(5)
+;; fib(1) = sqrt(5) / sqrt(5)
+;; fib(1) = 1
+;;
+;;
+;; try:
+;; fib(n + 1) = (p^(n + 1) - s^(n + 1)) / sqrt(5)
+;;
+;; fib(n + 1) = fib(n) + fib(n - 1)
+;; fib(n + 1) = (p^n - s^n) / sqrt(5) + (p^(n-1) - s^(n-1)) / sqrt(5)
+;;            = ((p^n + p^(n-1)) - (s^n + s^(n-1))) / sqrt(5)
+;;
+;;            a^n       = a^(n + 1) / a
+;;            a^(n - 1) = a^(n + 1) / a^2
+;;
+;;            a^n + a^(n-1) = a^(n + 1) * a^-1 + a^(n + 1) * a^-2
+;;                          = a^(n + 1) * (a^-1 + a^-2)
+;;
+;;            = ((p^(n + 1) * (p^-1 + p^-2)) - (s^(n + 1) * (s^-1 + s^-2))) / sqrt(5)
+;;
+;;
+;;                  p^-1 = 1 / p
+;;                       = 1 / ((1 + sqrt(5)) / 2)
+;;                       = (sqrt(5) - 1) / 2
+;;                       = p - 2/2
+;;                       = p - 1
+;;
+;;                  p^-2 = (p^-1)^2
+;;                       = (p - 1)^2
+;;                       = (3 - sqrt(5)) / 2
+;;                       = 2 - p
+;;
+;;                 p^-1 + p^-2 = (p - 1) + (2 - p)
+;;                             = 1
+;;
+;;
+;;                 s^-1 = 1 / s
+;;                      = 1 / ((1 - sqrt(5)) / 2)
+;;                      = (-1 - sqrt(5)) / 2
+;;                      = s - 1
+;;
+;;                 s^-2 = (s^-1)^2
+;;                      = (s - 1)^2
+;;                      = (3 + sqrt(5)) / 2
+;;                      = 2 - s
+;;
+;;                 s^-1 + s^-2 = (s - 1) + (2 - s)
+;;                             = 1
+;;
+;;           = ((p^(n + 1) * 1) - (s^(n + 1) * 1)) / sqrt(5)
+;;           = (p^(n + 1) - s^(n + 1)) / sqrt(5)
+;;
+;; proving fib(n) = (p^n - s^n) / sqrt(5)
+;;
+;; for fib(n) to be the closest number to p^n/sqrt(5)
+;; | fib(n) - p^n/sqrt(5) | <= 0.5
+;;
+;; thus
+;; | ((p^n - s^n) - p^n) / sqrt(5) | <= 0.5
+;; | -s^n / sqrt(5) | <= 0.5
+;; | s^n | = 0.5 * sqrt(5)
+;;
+;; s^n = ((1 - sqrt(5)) / 2)^n
+;;     = -0.618 ^ n
+;;
+;; | 0.618 ^ n | <= 1.118
+;;
+;; as any number x^n where 0 <= x <= 1 and n >= 0 is <= 1
+;; 0.618 ^ n must always be less than 1 and thus less than 1.118
+;;
+;; proving fib(n) is always closest to p^n / sqrt(5)
