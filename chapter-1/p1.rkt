@@ -400,3 +400,141 @@
 ;; 0.618 ^ n must always be less than 1 and thus less than 1.118
 ;;
 ;; proving fib(n) is always closest to p^n / sqrt(5)
+
+;; Exercise 1.14
+;;
+;; (count-change 11)
+;; : 11 5
+;;   : 11 4
+;;    : 11 3
+;;     : 11 2
+;;      : 11 1
+;;       : 11 0
+;;       : 10 1
+;;        : 10 0
+;;        : 9 1
+;;         : 9 0
+;;         : 8 1
+;;          : 8 0
+;;          : 7 1
+;;           : 7 0
+;;           : 6 1
+;;            : 6 0
+;;            : 5 1
+;;             : 5 0
+;;             : 4 1
+;;              : 4 0
+;;              : 3 1
+;;               : 3 0
+;;               : 2 1
+;;                : 2 0
+;;                : 1 1
+;;                 : 1 0
+;;                 : 0 1
+;;      : 6 2
+;;       : 6 1
+;;        : 6 0
+;;        : 5 1
+;;         : 5 0
+;;         : 4 1
+;;          : 4 0
+;;          : 3 1
+;;           : 3 0
+;;           : 2 1
+;;            : 2 0
+;;            : 1 1
+;;             : 1 0
+;;             : 0 1
+;;       : 1 2
+;;        : 1 1
+;;         : 1 0
+;;         : 0 1
+;;        : -4 2
+;;     : 1 3
+;;      : 1 2
+;;       : 1 1
+;;        : 1 0
+;;        : 0 1
+;;       : -4 2
+;;      : -9 3
+;;    : -14 4
+;;   : -39 5
+;; 4
+
+;; n = amount to be changed
+;; Space growth is O(n) -- nead n recursions deep when we get to the smallest cent
+;; Iteration growth is O(n^2), as n increases the number of ways we can divide up
+;; each remaining value increases
+
+
+;; Exercise 1.15
+;; a: Applied 4 times
+;; b: Space and step space grow by same value as recursion is linear
+;;    Function is O(log(n)) where n is the size of the number
+
+
+;; Exercise 1.16
+
+(module* exc-1-16 #f
+  (define (square x) (* x x))
+
+  (define (exp b n)
+    (let go ([a 1]
+             [b b]
+             [n n])
+      (cond [(= n 0) a]
+            [(even? n) (go a
+                           (square b)
+                           (/ n 2))]
+            [else (go (* a b)
+                      b
+                      (- n 1))])))
+  (exp 3 2) ;=> 9
+  (exp 4 0) ;=> 1
+  (exp 4 1) ;=> 4
+  (exp 4 2) ;=> 16
+  (exp 4 3) ;=> 64
+  (exp 4 4) ;=> 256
+  (exp 4 5) ;=> 1024
+  (exp 4 6) ;=> 4096
+  )
+
+
+(define (double x) (+ x x))
+(define (halve x) (arithmetic-shift x -1))
+
+
+(module* exc-1-17 #f
+  (define (mul x y)
+    (cond [(= y 0) 0]
+          [(= y 1) x]
+          [(even? y) (double (mul x (halve y)))]
+          [else (+ x (mul x (- y 1)))]))
+
+  (mul 0 2) ;=> 0
+  (mul 2 0) ;=> 0
+  (mul 1 2) ;=> 2
+  (mul 2 1) ;=> 2
+  (mul 3 4) ;=> 12
+  (mul 4 3) ;=> 12
+  )
+
+
+(module* exc-1-18 #f
+  (define (mul x y)
+    (define (go a y)
+      (cond [(= y 0) 0]
+            [(= y 1) a]
+            [(even? y) (go (double a)
+                           (halve y))]))
+    (if (even? y)
+        (go x y)
+        (+ x (go x (- y 1)))))
+
+  (mul 0 2) ;=> 0
+  (mul 2 0) ;=> 0
+  (mul 1 2) ;=> 2
+  (mul 2 1) ;=> 2
+  (mul 3 4) ;=> 12
+  (mul 4 3) ;=> 12
+  )
