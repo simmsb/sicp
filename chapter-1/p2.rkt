@@ -486,3 +486,81 @@
 
 ;; 2
 ;; total remainder operations: 5
+
+
+
+(define (square x) (* x x))
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond [(> (square test-divisor) n) n]
+        [(divides? test-divisor n) test-divisor]
+        [else (find-divisor n (+ test-divisor 1))]))
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+
+;; Exercise 1.21
+
+
+(module* exc-1-21 #f
+  (smallest-divisor 199) ;=> 199
+  (smallest-divisor 1999) ;=> 1999
+  (smallest-divisor 19999) ;=> 7
+  )
+
+
+;; Exercise 1.22
+
+
+(define (expmod base exp m)
+  (cond [(= exp 0) 1]
+        [(even? exp) (remainder (square (expmod base (/ exp 2) m))
+                                m)]
+        [else (remainder (* base (expmod base (- exp 1) m))
+                         m)]))
+
+
+(define (fermat-test n)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (try-it (+ 1 (random (- n 1)))))
+
+(define (fast-prime? n times)
+  (cond [(= times 0) #t]
+        [(fermat-test n) (fast-prime? n (- times 1))]
+        [else #f]))
+
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (current-inexact-milliseconds)))
+
+(define (start-prime-test n start-time)
+  (let ([isp (fast-prime? n 10)])
+    (when isp
+      (report-prime (- (current-inexact-milliseconds) start-time)))
+    isp))
+
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+
+(define (search-for-primes start count)
+  (let go ([n (if (even? start)
+                  (add1 start)
+                  start)]
+           [found '()])
+    (cond [(= (length found) count) found]
+          [(timed-prime-test n)
+           (go (+ 2 n) (cons n found))]
+          [else (go (+ 2 n) found)])))
+
+(search-for-primes 1000 3)
+(search-for-primes 10000 3)
+(search-for-primes 100000 3)
+(search-for-primes 1000000 3)
+
