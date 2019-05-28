@@ -38,19 +38,19 @@
         [else (ackermann (- x 1)
                          (ackermann x (- y 1)))]))
 
-(ackermann 1 10) ;=> 1024
+(ackermann 1 10)
 
-(ackermann 2 4) ;=> 65536
+(ackermann 2 4)
 
-(ackermann 3 3) ;=> 65536
+(ackermann 3 3)
 
 
 (define (f n) (ackermann 0 n))
 ;; (f n) = (* 2 n)
 
-(f 1) ;=> 2
-(f 2) ;=> 4
-(f 3) ;=> 6
+(f 1)
+(f 2)
+(f 3)
 
 (define (g n) (ackermann 1 n))
 ;; (g n) = (ackermann 0 (ackermann 1 (- n 1)) ;; (f (ackermann 1 (- n 1)))
@@ -59,55 +59,53 @@
 ;; (g n) = (* 2 (* 2 (ackermann 1 (- n 3))))
 ;; (g n) = 2 ^ n given n > 0
 
-(g 1) ;=> 2
-(g 2) ;=> 4
-(g 3) ;=> 8
+(g 1)
+(g 2)
+(g 3)
 
-(define (h n) (ackermann 2 n)) ;=> #<void>
+(define (h n) (ackermann 2 n))
 ;; (h n) = (ackermann 1 (ackermann 2 (- n 1)))
 ;; (h n) = (g (ackermann 2 (- n 1)))
 ;; (h n) = (g (g (ackermann 2 (- n 2))))
 ;; (h n) = (g (g (g (ackermann 2 (- n 3)))))
 ;; (h n) = 2 ^ (2 ^ (2 ^ (...)))
 
-(h 1) ;=> 2
-(h 2) ;=> 4
-(h 3) ;=> 16
+(h 1)
+(h 2)
+(h 3)
 
 
 ;; Exercise 1.11
-(module* exc-1-11 #f
-  (define (f-rec n)
-    (printf "n = ~a\n" n)
-    (cond [(< n 3) n]
-          [else (+ (* (f-rec (- n 1)) 1)
-                   (* (f-rec (- n 2)) 2)
-                   (* (f-rec (- n 3)) 3))]))
+(define (f-rec n)
+  (printf "n = ~a\n" n)
+  (cond [(< n 3) n]
+        [else (+ (* (f-rec (- n 1)) 1)
+                 (* (f-rec (- n 2)) 2)
+                 (* (f-rec (- n 3)) 3))]))
 
-  (f-rec 1) ;=> 1
-  (f-rec 3) ;=> 4
-  (f-rec 4) ;=> 11
+(f-rec 1)
+(f-rec 3)
+(f-rec 4)
 
-  (define (f-iter n)
-    (cond [(< n 3) n]
-          [else (let go ([a 2]
-                         [b 1]
-                         [c 0]
-                         [cnt 0])
-                  (cond [(= cnt (- n 2)) a]
-                        [else (go
-                               (+ a
-                                  (* 2 b)
-                                  (* 3 c))
-                               a
-                               b
-                               (add1 cnt))]))]))
+(define (f-iter n)
+  (cond [(< n 3) n]
+        [else (let go ([a 2]
+                       [b 1]
+                       [c 0]
+                       [cnt 0])
+                (cond [(= cnt (- n 2)) a]
+                      [else (go
+                             (+ a
+                                (* 2 b)
+                                (* 3 c))
+                             a
+                             b
+                             (add1 cnt))]))]))
 
-  (f-iter 1) ;=> 1
-  (f-iter 2) ;=> 2
-  (f-iter 3) ;=> 4
-  (f-iter 4) ;=> 11
-)
+(f-iter 1)
+(f-iter 2)
+(f-iter 3)
+(f-iter 4)
 
 
 ;; 1
@@ -117,16 +115,11 @@
 ;; 1 4 6 4 1
 
 ;; Exercise 1.12
-(module* exc-1-12 #f
-  (define (pascal row elem)
-    (cond [(<= elem 0)   1]
-          [(>= elem row) 1]
-          [else (+ (pascal (sub1 row) (sub1 elem))
-                   (pascal (sub1 row) elem))]))
-
-  (pascal 0 0)
-  (pascal 2 1)
-  )
+(define (pascal row elem)
+  (cond [(<= elem 0)   1]
+        [(>= elem row) 1]
+        [else (+ (pascal (sub1 row) (sub1 elem))
+                 (pascal (sub1 row) elem))]))
 
 
 ;; Exercise 1.13
@@ -284,69 +277,66 @@
 
 ;; Exercise 1.16
 
-(module* exc-1-16 #f
-  (define (square x) (* x x))
 
-  (define (exp b n)
-    (let go ([a 1]
-             [b b]
-             [n n])
-      (cond [(= n 0) a]
-            [(even? n) (go a
-                           (square b)
-                           (/ n 2))]
-            [else (go (* a b)
-                      b
-                      (- n 1))])))
-  (exp 3 2) ;=> 9
-  (exp 4 0) ;=> 1
-  (exp 4 1) ;=> 4
-  (exp 4 2) ;=> 16
-  (exp 4 3) ;=> 64
-  (exp 4 4) ;=> 256
-  (exp 4 5) ;=> 1024
-  (exp 4 6) ;=> 4096
-  )
+(define (square x) (* x x))
+
+(define (exp b n)
+  (let go ([a 1]
+           [b b]
+           [n n])
+    (cond [(= n 0) a]
+          [(even? n) (go a
+                         (square b)
+                         (/ n 2))]
+          [else (go (* a b)
+                    b
+                    (- n 1))])))
+(exp 3 2)
+(exp 4 0)
+(exp 4 1)
+(exp 4 2)
+(exp 4 3)
+(exp 4 4)
+(exp 4 5)
+(exp 4 6)
 
 
 (define (double x) (+ x x))
 (define (halve x) (arithmetic-shift x -1))
 
 
-(module* exc-1-17 #f
-  (define (mul x y)
+(define (mul-0 x y)
+  (cond [(= y 0) 0]
+        [(= y 1) x]
+        [(even? y) (double (mul-0 x (halve y)))]
+        [else (+ x (mul-0 x (- y 1)))]))
+
+(mul-0 0 2) ;=> 0
+(mul-0 2 0) ;=> 0
+(mul-0 1 2) ;=> 2
+(mul-0 2 1) ;=> 2
+(mul-0 3 4) ;=> 12
+(mul-0 4 3) ;=> 12
+
+
+
+(define (mul-1 x y)
+  (define (go a y)
     (cond [(= y 0) 0]
-          [(= y 1) x]
-          [(even? y) (double (mul x (halve y)))]
-          [else (+ x (mul x (- y 1)))]))
+          [(= y 1) a]
+          [(even? y) (go (double a)
+                         (halve y))]))
+  (if (even? y)
+      (go x y)
+      (+ x (go x (- y 1)))))
 
-  (mul 0 2) ;=> 0
-  (mul 2 0) ;=> 0
-  (mul 1 2) ;=> 2
-  (mul 2 1) ;=> 2
-  (mul 3 4) ;=> 12
-  (mul 4 3) ;=> 12
-  )
+(mul-1 0 2) ;=> 0
+(mul-1 2 0) ;=> 0
+(mul-1 1 2) ;=> 2
+(mul-1 2 1) ;=> 2
+(mul-1 3 4) ;=> 12
+(mul-1 4 3) ;=> 12
 
-
-(module* exc-1-18 #f
-  (define (mul x y)
-    (define (go a y)
-      (cond [(= y 0) 0]
-            [(= y 1) a]
-            [(even? y) (go (double a)
-                           (halve y))]))
-    (if (even? y)
-        (go x y)
-        (+ x (go x (- y 1)))))
-
-  (mul 0 2) ;=> 0
-  (mul 2 0) ;=> 0
-  (mul 1 2) ;=> 2
-  (mul 2 1) ;=> 2
-  (mul 3 4) ;=> 12
-  (mul 4 3) ;=> 12
-  )
 
 
 ;; Exercise 1.19
@@ -392,8 +382,8 @@
   (fib 2) ;=> 1
   (fib 3) ;=> 2
   (fib 4) ;=> 3
-  (fib 5) ;=> 5
-  )
+  (fib 5)) ;=> 5
+
 
 
 ;; Exercise 1.20
@@ -489,15 +479,17 @@
 
 
 
-(define (square x) (* x x))
-
 (define (smallest-divisor n)
   (find-divisor n 2))
+
+(define (next-divisor-test n)
+  (cond [(= n 2) 3]
+        [else (+ 2 n)]))
 
 (define (find-divisor n test-divisor)
   (cond [(> (square test-divisor) n) n]
         [(divides? test-divisor n) test-divisor]
-        [else (find-divisor n (+ test-divisor 1))]))
+        [else (find-divisor n (next-divisor-test test-divisor))]))
 
 (define (divides? a b)
   (= (remainder b a) 0))
@@ -506,11 +498,9 @@
 ;; Exercise 1.21
 
 
-(module* exc-1-21 #f
-  (smallest-divisor 199) ;=> 199
-  (smallest-divisor 1999) ;=> 1999
-  (smallest-divisor 19999) ;=> 7
-  )
+(smallest-divisor 199)
+(smallest-divisor 1999)
+(smallest-divisor 19999)
 
 
 ;; Exercise 1.22
@@ -564,3 +554,116 @@
 (search-for-primes 100000 3)
 (search-for-primes 1000000 3)
 
+;; Exercise 1.27
+
+(define (slow-prime? n)
+  (= n (smallest-divisor n)))
+
+(define (all-congruent? n)
+  (let loop ([a 1])
+    (cond [(= a n) #t]
+          [(= (expmod a n n) a) (loop (add1 a))]
+          [else #f])))
+
+(all-congruent? 3)
+(all-congruent? 561)
+
+(define (carmichael? n)
+  ;; carmichael numbers are where all-congruent is true, but not prime
+  (and (all-congruent? n) (not (slow-prime? n))))
+
+(carmichael? 561)
+(carmichael? 3)
+(carmichael? 2)
+(carmichael? 7)
+
+
+;; Excercise 1.29
+(define (sum term a next b)
+  (if (> a b)
+      0
+      (+ (term a)
+         (sum term (next a) next b))))
+
+(define (simpsons-integral f a b n)
+  (let ([h (/ (- b a) n)])
+    (define (add-2h n)
+      (+ n (* 2 h)))
+    (let ([fst (f a)]
+          [lst (f b)]
+          [fours (sum f (+ a h) add-2h b)]
+          [twos (sum f (add-2h a) add-2h b)])
+      (/ (* h
+            (+ fst
+               (* 4 fours)
+               (* 2 twos)
+               lst))
+         3))))
+
+(define (cube x)
+  (* x x x))
+
+(simpsons-integral cube 0 1 100)
+(simpsons-integral cube 0 1 1000)
+
+
+;; Exercise 1.30
+
+(define (sum-iter term a next b)
+  (let loop ([a a]
+             [result 0])
+    (cond [(> a b) result]
+          [else (loop (next a)
+                      (+ result (term a)))])))
+
+(sum identity 0 add1 10)
+(sum-iter identity 0 add1 10)
+
+;; Exercise 1.31
+
+(define (product-iter term a next b)
+  (let loop ([a a]
+             [result 1])
+    (cond [(> a b) result]
+          [else (loop (next a)
+                      (* result (term a)))])))
+
+(define (product-rec term a next b)
+  (if (> a b)
+      1
+      (* (term a)
+         (product-rec term (next a) next b))))
+
+(define (fac n)
+  (product-iter identity 1 add1 n))
+
+(fac 0)
+(fac 1)
+(fac 2)
+(fac 3)
+
+(define (add2 n)
+  (+ n 2))
+
+(define (pi/4 n)
+  (/ (* 2 n
+        (square (product-iter identity 4 add2 (sub1 n))))
+     (square (product-iter identity 3 add2 n))))
+
+(pi/4 100)
+
+
+;; Exercise 1.32
+
+(define (accumulate combiner null-value term a next b)
+  (let loop ([a a]
+             [result null-value])
+    (cond [(> a b) result]
+          [else (loop (next a)
+                      (combiner result (term a)))])))
+
+(define (sum-acc term a next b)
+  (accumulate + 0 term a next b))
+
+(define (product-acc term a next b)
+  (accumulate * 1 term a next b))
