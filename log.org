@@ -12,3 +12,7 @@
 * <2019-05-28 Tue>
 - Up to exercise 1.32
 - Page: 61
+* <2019-05-20 Mon>
+- Up to exercise 1.46
+- Page: 79
+- Chapter 2

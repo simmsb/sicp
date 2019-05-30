@@ -524,6 +524,9 @@
         [(fermat-test n) (fast-prime? n (- times 1))]
         [else #f]))
 
+(define (prime? n)
+  (fast-prime? n 10))
+
 (define (timed-prime-test n)
   (newline)
   (display n)
@@ -652,7 +655,6 @@
 
 (pi/4 100)
 
-
 ;; Exercise 1.32
 
 (define (accumulate combiner null-value term a next b)
@@ -667,3 +669,98 @@
 
 (define (product-acc term a next b)
   (accumulate * 1 term a next b))
+
+
+;; Exercise 1.33
+
+(define (filtered-accumulate pred combiner null-value term a next b)
+  (let loop ([a a]
+             [result null-value])
+    (cond [(> a b) result]
+          [(pred a) (loop (next a)
+                          (combiner result (term a)))]
+          [else (loop (next a) result)])))
+
+(define (sum-squares-of-primes a b)
+  (filtered-accumulate prime? + 0 square a next-divisor-test b))
+
+
+;; Exercise 1.37
+
+(define (cont-frac n d k)
+  (let loop ([k k]
+             [acc 0])
+    (if (= 0 k)
+        acc
+        (loop (sub1 k)
+              (/ (n k)
+                 (+ (d k)
+                    acc))))))
+
+(define (1/phi k)
+  (cont-frac (const 1.0)
+             (const 1.0)
+             k))
+
+(1/phi 100000)
+
+;; Exercise 1.38
+
+(define (e k)
+  (cont-frac (const 1.0)
+             (lambda (i)
+               (if (divides? 3 (add1 i))
+                   (/ (* 2 (add1 i)) 3)
+                   1))
+             k))
+
+(e 100000)
+
+;; Exercise 1.39
+
+(define (tan-cf x k)
+  (- (cont-frac (lambda (i) (- (exp x i)))
+                (lambda (i) (- (* 2 i) 1))
+                k)))
+
+(tan-cf 0.1 100)
+(tan-cf 3.14 100)
+(tan-cf 0 100)
+(tan-cf (/ 3.141 2) 100)
+(tan-cf (/ 3.142 2) 100)
+
+;; Exercise 1.41
+
+(define (double-app f)
+  ;; (compose f f)
+  (lambda (x) (f (f x))))
+
+;; Exercise 1.42
+
+(define (compose-f f g)
+  (lambda (x) (f (g x))))
+
+;; Exercise 1.43
+
+(define (repeated f n)
+  (if (= n 1)
+      f
+      (compose (repeated f (sub1 n)) f)))
+
+((repeated square 3) 5)
+
+;; Exercise 1.44
+
+(define (smooth f dx)
+  (lambda (x)
+    (/ (+ (f (+ x dx))
+          (f x)
+          (f (- x dx)))
+       3)))
+
+((smooth square 0.01) 3.4)
+
+(define (n-fold-smooth f n dx)
+  (repeated (smooth f dx) n))
+
+((n-fold-smooth square 4 0.1) 3.4)
