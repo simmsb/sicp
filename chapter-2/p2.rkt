@@ -134,8 +134,12 @@
                           rest)))))
 
 
-(subsets '(1 2 3 4))
+(subsets '(1 2 3))
 
+(length (subsets '(1)))
+(length (subsets '(1 2)))
+(length (subsets '(1 2 3)))
+(length (subsets '(1 2 3 4)))
 
 ;; Exercise 2.34
 
@@ -233,6 +237,17 @@
 
 (require racket/match)
 
+(define (fold-ops exp)
+  (match exp
+    [`(,op ,a ,@r)
+     #:when (and (member op '(+ *))
+                 (> (length r) 1))
+     (foldl (lambda (exp acc)
+              `(,op ,(fold-ops exp) ,acc))
+            (fold-ops a)
+            r)]
+    [_ exp]))
+
 (define (deriv exp var)
   (cond
    [(number? exp)
@@ -240,20 +255,34 @@
    [(symbol? exp)
     (if (eq? exp var) 1 0)]
    [else
-    (match exp
+    (match (fold-ops exp)
       [`(+ ,a ,b)
        `(+ ,(deriv a var)
            ,(deriv b var))]
       [`(* ,a ,b)
        `(+ (* ,a ,(deriv b var))
            (* ,(deriv a var) ,b))]
+      [`(** ,u ,n)
+       #:when (number? n)
+       `(* (* ,(deriv u var) ,n)
+           (** ,u ,(- n 1)))]
       [_ (error "bad expr" exp)])]))
 
 (define (simpl exp)
   (let ([rexp (match exp
-                [(or `(* ,_ 0) `(* 0 ,_))
+                [`(,op ,a ,b)
+                 #:when (and (member op '(+ * **))
+                             (number? a)
+                             (number? b))
+                 (match op
+                   ['+ (+ a b)]
+                   ['* (* a b)]
+                   ['** (expt a b)])]
+                [`(** ,_ 0)
+                 1]
+                [(or `(* ,_ 0) `(* 0 ,_) `(** 0 ,_))
                  0]
-                [(or `(* ,a 1) `(* 1 ,a))
+                [(or `(* ,a 1) `(* 1 ,a) `(** ,a 1))
                  (simpl a)]
                 [(or `(+ ,a 0) `(+ 0 ,a))
                  (simpl a)]
